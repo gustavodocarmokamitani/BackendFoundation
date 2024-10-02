@@ -1,8 +1,5 @@
-﻿using backend.Context;
-using backend.Models;
+﻿using backend.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,21 +9,24 @@ namespace backend.Controllers
     [Route("api/[controller]")]
     public class UsuarioController : ControllerBase
     {
-        private readonly DataContext _dbContext;
+        private readonly SalaoContext _dbContext; // Atualizado para SalaoContext
 
-        public UsuarioController(DataContext dbContext)
+        public UsuarioController(SalaoContext dbContext)
         {
             _dbContext = dbContext;
         }
 
+        // GET: api/usuario
         [HttpGet]
-        public IEnumerable<Usuario> Get()
+        public ActionResult<IEnumerable<Usuario>> Get()
         {
-            return _dbContext.Usuarios.ToList();
+            var usuarios = _dbContext.Usuarios.ToList();
+            return Ok(usuarios);
         }
 
+        // GET: api/usuario/{id}
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public ActionResult<Usuario> GetById(int id)
         {
             var usuario = _dbContext.Usuarios.Find(id);
 
@@ -38,14 +38,14 @@ namespace backend.Controllers
             return Ok(usuario);
         }
 
+        // POST: api/usuario
         [HttpPost]
-        public IActionResult Post([FromBody] Usuario usuario)
+        public ActionResult<Usuario> Post([FromBody] Usuario usuario)
         {
             if (usuario == null)
             {
                 return BadRequest("Dados inválidos");
             }
-            usuario.Confirmado = false;
 
             _dbContext.Usuarios.Add(usuario);
             _dbContext.SaveChanges();
@@ -53,6 +53,7 @@ namespace backend.Controllers
             return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, usuario);
         }
 
+        // PUT: api/usuario/{id}
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Usuario usuario)
         {
@@ -68,24 +69,13 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            // Copiar todas as propriedades do objeto recebido para o objeto existente, exceto o Id
             _dbContext.Entry(existingUsuario).CurrentValues.SetValues(usuario);
-            _dbContext.Entry(existingUsuario).Property(x => x.Id).IsModified = false;
-
-            // Salvar as alterações no banco de dados
             _dbContext.SaveChanges();
 
             return NoContent();
         }
 
-        [HttpGet("confirmados")]
-        public IEnumerable<Usuario> GetConfirmados()
-        {
-            var usuariosConfirmados = _dbContext.Usuarios.Where(u => u.Confirmado).ToList();
-            return usuariosConfirmados;
-        }
-
-
+        // DELETE: api/usuario/{id}
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

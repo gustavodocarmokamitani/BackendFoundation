@@ -1,8 +1,4 @@
-using backend.Context;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,9 +6,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Adicione serviços ao contêiner.
 string? mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContextPool<DataContext>(options =>
+builder.Services.AddDbContextPool<SalaoContext>(options =>
     options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
+// Adiciona CORS com política nomeada
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder
+            .WithOrigins("http://localhost:3000") // Substitua pelo domínio correto do seu frontend
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+// Adiciona controladores e Swagger
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -31,15 +38,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Configuração CORS
-app.Use((context, next) =>
-{
-    context.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:3000");
-    context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-
-    return next();
-});
+// Ativa o middleware de CORS com a política configurada
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
