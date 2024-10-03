@@ -69,7 +69,13 @@ namespace backend.Controllers
 
             if (existingUsuario == null)
             {
-                return NotFound();
+                return BadRequest($"Usuário com ID {usuario.TipoUsuarioId} não encontrado.");
+            }
+
+            var tipoUsuario = _dbContext.TipoUsuarios.Find(usuario.TipoUsuarioId);
+            if (tipoUsuario == null)
+            {
+                return BadRequest($"Tipo de usuário com ID {usuario.TipoUsuarioId} não encontrado.");
             }
 
             _dbContext.Entry(existingUsuario).CurrentValues.SetValues(usuario);

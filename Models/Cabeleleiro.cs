@@ -11,7 +11,7 @@ namespace backend.Models
         public int Id { get; set; }
         public int UsuarioId { get; set; }
 
-        public ICollection<Servico> Servicos { get; set; } = new List<Servico>();
+        public ICollection<int> ServicosId { get; set; } = new List<int>();
 
         [JsonIgnore]
         public Usuario? Usuario { get; set; }
@@ -21,5 +21,8 @@ namespace backend.Models
 
         [JsonIgnore]
         public ICollection<Avaliacao> Avaliacoes { get; set; } = new List<Avaliacao>();
+        
+        [JsonIgnore]
+        public ICollection<Servico> Servicos { get; set; } = new List<Servico>();
     }
 }

@@ -34,48 +34,101 @@ namespace backend.Controllers
 
         // Criar um novo agendamento
         [HttpPost]
-        public ActionResult<Agendamento> Post([FromBody] Agendamento agendamento)
+        public async Task<ActionResult<Agendamento>> Post([FromBody] Agendamento agendamento)
         {
-            if (agendamento == null) return BadRequest("Dados inválidos");
+            if (agendamento == null)
+                return BadRequest("Dados inválidos.");
 
-            // Verifica se o ClienteId existe
-            var cliente = _dbContext.Usuarios.Find(agendamento.ClienteId);
+            // Verifica se o ClienteId (Usuário) existe
+            var cliente = await _dbContext.Usuarios.FindAsync(agendamento.ClienteId);
             if (cliente == null)
             {
                 return BadRequest($"Cliente com ID {agendamento.ClienteId} não encontrado.");
             }
 
             // Verifica se o CabeleleiroId existe
-            var cabeleireiro = _dbContext.Cabeleleiros.Find(agendamento.
-                Id);
+            var cabeleireiro = await _dbContext.Cabeleleiros.FindAsync(agendamento.CabeleleiroId);
             if (cabeleireiro == null)
             {
-                return BadRequest($"Cabeleleiro com ID {agendamento.CabeleleiroId} não encontrado.");
+                return BadRequest($"Cabeleireiro com ID {agendamento.CabeleleiroId} não encontrado.");
             }
 
             // Verifica se o ServicoId existe
-            var servico = _dbContext.Servicos.Find(agendamento.ServicoId);
+            var servico = await _dbContext.Servicos.FindAsync(agendamento.ServicoId);
             if (servico == null)
             {
                 return BadRequest($"Serviço com ID {agendamento.ServicoId} não encontrado.");
             }
 
+            // Verifica se o StatusAgendamentoId é válido (1 Confirmado, 2 Cancelado, 3 Pendente)
+            if (agendamento.StatusAgendamentoId < 1 || agendamento.StatusAgendamentoId > 3)
+            {
+                return BadRequest("Status do agendamento inválido.");
+            }
+
             // Se todos os IDs forem válidos, adiciona o agendamento
             _dbContext.Agendamentos.Add(agendamento);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetById), new { id = agendamento.Id }, agendamento);
         }
 
+
         // Atualizar um agendamento existente
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Agendamento agendamento)
+        public async Task<ActionResult> Put(int id, [FromBody] Agendamento agendamento)
         {
-            if (agendamento == null || id != agendamento.Id) return BadRequest("Dados inválidos");
-            var existingAgendamento = _dbContext.Agendamentos.Find(id);
-            if (existingAgendamento == null) return NotFound();
-            _dbContext.Entry(existingAgendamento).CurrentValues.SetValues(agendamento);
-            _dbContext.SaveChanges();
-            return NoContent();
+            if (agendamento == null || agendamento.Id != id)
+            {
+                return BadRequest("Dados inválidos.");
+            }
+
+            // Verifica se o agendamento existe
+            var agendamentoExistente = await _dbContext.Agendamentos.FindAsync(id);
+            if (agendamentoExistente == null)
+            {
+                return NotFound($"Agendamento com ID {id} não encontrado.");
+            }
+
+            // Verifica se o ClienteId (Usuário) existe
+            var cliente = await _dbContext.Usuarios.FindAsync(agendamento.ClienteId);
+            if (cliente == null)
+            {
+                return BadRequest($"Cliente com ID {agendamento.ClienteId} não encontrado.");
+            }
+
+            // Verifica se o CabeleleiroId existe
+            var cabeleireiro = await _dbContext.Cabeleleiros.FindAsync(agendamento.CabeleleiroId);
+            if (cabeleireiro == null)
+            {
+                return BadRequest($"Cabeleireiro com ID {agendamento.CabeleleiroId} não encontrado.");
+            }
+
+            // Verifica se o ServicoId existe
+            var servico = await _dbContext.Servicos.FindAsync(agendamento.ServicoId);
+            if (servico == null)
+            {
+                return BadRequest($"Serviço com ID {agendamento.ServicoId} não encontrado.");
+            }
+
+            // Verifica se o StatusAgendamentoId é válido (1 Confirmado, 2 Cancelado, 3 Pendente)
+            if (agendamento.StatusAgendamentoId < 1 || agendamento.StatusAgendamentoId > 3)
+            {
+                return BadRequest("Status do agendamento inválido.");
+            }
+
+            // Atualiza os dados do agendamento existente
+            agendamentoExistente.ClienteId = agendamento.ClienteId;
+            agendamentoExistente.CabeleleiroId = agendamento.CabeleleiroId;
+            agendamentoExistente.ServicoId = agendamento.ServicoId;
+            agendamentoExistente.DataAgendamento = agendamento.DataAgendamento;
+            agendamentoExistente.StatusAgendamentoId = agendamento.StatusAgendamentoId;
+
+            // Salva as alterações no banco de dados
+            _dbContext.Agendamentos.Update(agendamentoExistente);
+            await _dbContext.SaveChangesAsync();
+
+            return NoContent(); // Retorna 204 NoContent quando a atualização é bem-sucedida
         }
 
         // Deletar um agendamento
