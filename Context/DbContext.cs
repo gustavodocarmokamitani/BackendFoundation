@@ -24,9 +24,9 @@ public class SalaoContext : DbContext
     {
         // Configuração para Usuario
         modelBuilder.Entity<Usuario>()
-            .HasMany(u => u.Agendamentos)
-            .WithOne(a => a.Cliente)
-            .HasForeignKey(a => a.ClienteId);
+        .HasMany(u => u.Agendamentos)
+        .WithOne(a => a.Cliente)
+        .HasForeignKey(a => a.ClienteId);
 
         modelBuilder.Entity<Usuario>()
             .HasMany(u => u.Avaliacoes)
@@ -45,20 +45,9 @@ public class SalaoContext : DbContext
             .HasForeignKey(a => a.CabeleleiroId);
 
         modelBuilder.Entity<Cabeleleiro>()
-            .HasMany(c => c.Servicos)
-            .WithOne(s => s.Cabeleleiro)
-            .HasForeignKey(s => s.CabeleleiroId);
-
-        modelBuilder.Entity<Cabeleleiro>()
             .HasMany(c => c.Avaliacoes)
             .WithOne(a => a.Cabeleleiro)
             .HasForeignKey(a => a.CabeleleiroId);
-
-        // Configuração para Servico
-        modelBuilder.Entity<Servico>()
-            .HasMany(s => s.Agendamentos)
-            .WithOne(a => a.Servico)
-            .HasForeignKey(a => a.ServicoId);
 
         // Configuração para Agendamento
         modelBuilder.Entity<Agendamento>()

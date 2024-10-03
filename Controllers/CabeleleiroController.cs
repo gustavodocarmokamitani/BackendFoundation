@@ -144,11 +144,56 @@ namespace backend.Controllers
             return NoContent();
         }
 
+        // Avaliacoes do cabeleleiro
+        [HttpGet("{cabeleleiroId}/avaliacoes")]
+        public async Task<ActionResult<IEnumerable<Avaliacao>>> GetAvaliacoesByCabeleleiro(int cabeleleiroId)
+        {
+            // Verifica se o CabeleleiroId existe
+            var cabeleireiro = await _dbContext.Cabeleleiros.FindAsync(cabeleleiroId);
+            if (cabeleireiro == null)
+            {
+                return NotFound($"Cabeleleiro com ID {cabeleleiroId} não encontrado.");
+            }
+
+            // Buscar todas as avaliações do cabeleireiro
+            var avaliacoes = await _dbContext.Avaliacoes
+                                             .Where(a => a.CabeleleiroId == cabeleleiroId)
+                                             .ToListAsync();
+
+            return Ok(avaliacoes);
+        }
+
+        // Media das avaliacoes do cabeleleiro
+        [HttpGet("{cabeleleiroId}/media-avaliacoes")]
+        public async Task<ActionResult<double>> GetMediaAvaliacoesByCabeleleiro(int cabeleleiroId)
+        {
+            // Verifica se o CabeleleiroId existe
+            var cabeleireiro = await _dbContext.Cabeleleiros.FindAsync(cabeleleiroId);
+            if (cabeleireiro == null)
+            {
+                return NotFound($"Cabeleleiro com ID {cabeleleiroId} não encontrado.");
+            }
+
+            // Buscar todas as avaliações do cabeleireiro
+            var avaliacoes = await _dbContext.Avaliacoes
+                                             .Where(a => a.CabeleleiroId == cabeleleiroId)
+                                             .ToListAsync();
+
+            if (!avaliacoes.Any())
+            {
+                return Ok(0); // Caso não tenha avaliações, retorna média 0
+            }
+
+            // Calcular a média das notas
+            var mediaAvaliacoes = avaliacoes.Average(a => a.Nota); // Supondo que o campo da avaliação seja 'Nota'
+
+            return Ok(mediaAvaliacoes);
+        }
+
         // Funções
         private bool CabeleleiroExists(int id)
         {
             return _dbContext.Cabeleleiros.Any(e => e.Id == id);
         }
-
     }
 }

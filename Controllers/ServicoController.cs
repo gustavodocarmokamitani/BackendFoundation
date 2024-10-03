@@ -42,14 +42,6 @@ namespace backend.Controllers
                 return BadRequest($"Tipo de serviço com ID {servico.TipoServicoId} não encontrado.");
             }
 
-            // Verifica se o
-            // Id existe
-            var cabeleleiro = _dbContext.Cabeleleiros.Find(servico.CabeleleiroId);
-            if (cabeleleiro == null)
-            {
-                return BadRequest($"Cabeleleiro com ID {servico.CabeleleiroId} não encontrado.");
-            }
-
             _dbContext.Servicos.Add(servico);
             _dbContext.SaveChanges();
             return CreatedAtAction(nameof(GetById), new { id = servico.Id }, servico);

@@ -20,7 +20,16 @@ namespace backend.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Agendamento>> Get()
         {
-            return Ok(_dbContext.Agendamentos.ToList());
+            try
+            {
+                var agendamentos = _dbContext.Agendamentos.ToList();
+                if (!agendamentos.Any()) return NotFound("Nenhum agendamento encontrado.");
+                return Ok(agendamentos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
+            }
         }
 
         // Obter agendamento por ID
@@ -53,11 +62,14 @@ namespace backend.Controllers
                 return BadRequest($"Cabeleireiro com ID {agendamento.CabeleleiroId} não encontrado.");
             }
 
-            // Verifica se o ServicoId existe
-            var servico = await _dbContext.Servicos.FindAsync(agendamento.ServicoId);
-            if (servico == null)
+            // Verifica se todos os ServicoIds existem
+            foreach (var servicoId in agendamento.ServicosId)
             {
-                return BadRequest($"Serviço com ID {agendamento.ServicoId} não encontrado.");
+                var servico = await _dbContext.Servicos.FindAsync(servicoId);
+                if (servico == null)
+                {
+                    return BadRequest($"Serviço com ID {servicoId} não encontrado.");
+                }
             }
 
             // Verifica se o StatusAgendamentoId é válido (1 Confirmado, 2 Cancelado, 3 Pendente)
@@ -72,7 +84,6 @@ namespace backend.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = agendamento.Id }, agendamento);
         }
-
 
         // Atualizar um agendamento existente
         [HttpPut("{id}")]
@@ -105,10 +116,10 @@ namespace backend.Controllers
             }
 
             // Verifica se o ServicoId existe
-            var servico = await _dbContext.Servicos.FindAsync(agendamento.ServicoId);
+            var servico = await _dbContext.Servicos.FindAsync(agendamento.ServicosId);
             if (servico == null)
             {
-                return BadRequest($"Serviço com ID {agendamento.ServicoId} não encontrado.");
+                return BadRequest($"Serviço com ID {agendamento.ServicosId} não encontrado.");
             }
 
             // Verifica se o StatusAgendamentoId é válido (1 Confirmado, 2 Cancelado, 3 Pendente)
@@ -120,7 +131,7 @@ namespace backend.Controllers
             // Atualiza os dados do agendamento existente
             agendamentoExistente.ClienteId = agendamento.ClienteId;
             agendamentoExistente.CabeleleiroId = agendamento.CabeleleiroId;
-            agendamentoExistente.ServicoId = agendamento.ServicoId;
+            agendamentoExistente.ServicosId = agendamento.ServicosId;
             agendamentoExistente.DataAgendamento = agendamento.DataAgendamento;
             agendamentoExistente.StatusAgendamentoId = agendamento.StatusAgendamentoId;
 

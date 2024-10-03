@@ -8,7 +8,6 @@ namespace backend.Models
     {
         public int Id { get; set; }
         public int TipoServicoId { get; set; } // FK para Cabeleleiro
-        public int CabeleleiroId { get; set; }  // FK para Cabeleleiro
 
         // Relacionamentos
         [JsonIgnore]
