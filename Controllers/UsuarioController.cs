@@ -42,14 +42,17 @@ namespace backend.Controllers
         [HttpPost]
         public ActionResult<Usuario> Post([FromBody] Usuario usuario)
         {
-            if (usuario == null)
+            if (usuario == null) return BadRequest("Dados inválidos");
+
+            // Verifica se o tipoUsuarioId existe
+            var tipoUsuario = _dbContext.TipoUsuarios.Find(usuario.TipoUsuarioId);
+            if (tipoUsuario == null)
             {
-                return BadRequest("Dados inválidos");
+                return BadRequest($"Tipo de usuário com ID {usuario.TipoUsuarioId} não encontrado.");
             }
 
             _dbContext.Usuarios.Add(usuario);
             _dbContext.SaveChanges();
-
             return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, usuario);
         }
 

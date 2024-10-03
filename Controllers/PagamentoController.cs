@@ -34,6 +34,14 @@ namespace backend.Controllers
         public ActionResult<Pagamento> Post([FromBody] Pagamento pagamento)
         {
             if (pagamento == null) return BadRequest("Dados inválidos");
+
+            // Verifica se o AgendamentoId existe
+            var agendamento = _dbContext.Agendamentos.Find(pagamento.AgendamentoId);
+            if (agendamento == null)
+            {
+                return BadRequest($"Agendamento com ID {pagamento.AgendamentoId} não encontrado.");
+            }
+
             _dbContext.Pagamentos.Add(pagamento);
             _dbContext.SaveChanges();
             return CreatedAtAction(nameof(GetById), new { id = pagamento.Id }, pagamento);

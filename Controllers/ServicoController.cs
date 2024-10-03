@@ -34,6 +34,22 @@ namespace backend.Controllers
         public ActionResult<Servico> Post([FromBody] Servico servico)
         {
             if (servico == null) return BadRequest("Dados inválidos");
+
+            // Verifica se o TipoServicoId existe
+            var tipoServico = _dbContext.TipoServicos.Find(servico.TipoServicoId);
+            if (tipoServico == null)
+            {
+                return BadRequest($"Tipo de serviço com ID {servico.TipoServicoId} não encontrado.");
+            }
+
+            // Verifica se o
+            // Id existe
+            var cabeleleiro = _dbContext.Cabeleleiros.Find(servico.CabeleleiroId);
+            if (cabeleleiro == null)
+            {
+                return BadRequest($"Cabeleleiro com ID {servico.CabeleleiroId} não encontrado.");
+            }
+
             _dbContext.Servicos.Add(servico);
             _dbContext.SaveChanges();
             return CreatedAtAction(nameof(GetById), new { id = servico.Id }, servico);

@@ -1,25 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
     [Table("Cabeleleiro")]
-    public class Cabeleireiro
+    public class Cabeleleiro
     {
         public int Id { get; set; }
-        public int UsuarioId { get; set; } // FK para Usuario
-        public string Especialidade { get; set; } = string.Empty;
-        public int AnosExperiencia { get; set; }
-        public float AvaliacaoMedia { get; set; }
+        public int UsuarioId { get; set; }
 
-        // Relacionamentos
+        public ICollection<Servico> Servicos { get; set; } = new List<Servico>();
+
         [JsonIgnore]
         public Usuario? Usuario { get; set; }
+
         [JsonIgnore]
-        public ICollection<Agendamento>? Agendamentos { get; set; }
+        public ICollection<Agendamento> Agendamentos { get; set; } = new List<Agendamento>();
+
         [JsonIgnore]
-        public ICollection<Servico>? Servicos { get; set; }
-        [JsonIgnore]
-        public ICollection<Avaliacao>? Avaliacoes { get; set; }
+        public ICollection<Avaliacao> Avaliacoes { get; set; } = new List<Avaliacao>();
     }
 }

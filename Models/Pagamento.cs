@@ -8,12 +8,15 @@ namespace backend.Models
     {
         public int Id { get; set; }
         public int AgendamentoId { get; set; } // FK para Agendamento
-        public string MetodoPagamento { get; set; } = string.Empty; // Cartão, Dinheiro
-        public string StatusPagamento { get; set; } = string.Empty; // Pago, Pendente
-        public float ValorPago { get; set; }
+        public int? MetodoPagamentoId { get; set; }  // 1 Credito 2 Debito 3 Dinheiro 4 Pix 5 Outros
+        public int? StatusPagamentoId { get; set; } // 1 Confirmado 2 Pendente
+        public float? ValorPago { get; set; }
 
         // Relacionamento
         [JsonIgnore]
         public Agendamento? Agendamento { get; set; }
+
+        public StatusPagamento? StatusPagamento { get; set; }
+        public MetodoPagamento? MetodoPagamento { get; set; }
     }
 }

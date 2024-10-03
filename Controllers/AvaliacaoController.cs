@@ -1,7 +1,9 @@
 ﻿using backend.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
@@ -17,46 +19,61 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Avaliacao>> Get()
+        public async Task<ActionResult<IEnumerable<Avaliacao>>> Get()
         {
-            return Ok(_dbContext.Avaliacoes.ToList());
+            return Ok(await _dbContext.Avaliacoes.ToListAsync());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Avaliacao> GetById(int id)
+        public async Task<ActionResult<Avaliacao>> GetById(int id)
         {
-            var avaliacao = _dbContext.Avaliacoes.Find(id);
+            var avaliacao = await _dbContext.Avaliacoes.FindAsync(id);
             if (avaliacao == null) return NotFound();
             return Ok(avaliacao);
         }
 
         [HttpPost]
-        public ActionResult<Avaliacao> Post([FromBody] Avaliacao avaliacao)
+        public async Task<ActionResult<Avaliacao>> Post([FromBody] Avaliacao avaliacao)
         {
             if (avaliacao == null) return BadRequest("Dados inválidos");
+
+            // Verifica se o CabeleleiroId existe
+            var cabeleleiro = await _dbContext.Cabeleleiros.FindAsync(avaliacao.CabeleleiroId);
+            if (cabeleleiro == null)
+            {
+                return BadRequest($"Cabeleleiro com ID {avaliacao.CabeleleiroId} não encontrado.");
+            }
+
+            // Adiciona a avaliação
             _dbContext.Avaliacoes.Add(avaliacao);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetById), new { id = avaliacao.Id }, avaliacao);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Avaliacao avaliacao)
+        public async Task<IActionResult> Put(int id, [FromBody] Avaliacao avaliacao)
         {
             if (avaliacao == null || id != avaliacao.Id) return BadRequest("Dados inválidos");
-            var existingAvaliacao = _dbContext.Avaliacoes.Find(id);
+
+            var existingAvaliacao = await _dbContext.Avaliacoes.FindAsync(id);
             if (existingAvaliacao == null) return NotFound();
+
             _dbContext.Entry(existingAvaliacao).CurrentValues.SetValues(avaliacao);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var avaliacao = _dbContext.Avaliacoes.Find(id);
+            var avaliacao = await _dbContext.Avaliacoes.FindAsync(id);
             if (avaliacao == null) return NotFound();
+
             _dbContext.Avaliacoes.Remove(avaliacao);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+
             return NoContent();
         }
     }

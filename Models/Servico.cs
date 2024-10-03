@@ -7,15 +7,16 @@ namespace backend.Models
     public class Servico
     {
         public int Id { get; set; }
-        public string Nome { get; set; } = string.Empty;
-        public string Descricao { get; set; } = string.Empty;
-        public int DuracaoMinutos { get; set; }  // Duração em minutos
-        public float Preco { get; set; }  // Preço do serviço
-        public int CabeleireiroId { get; set; }  // FK para Cabeleireiro
+        public int TipoServicoId { get; set; } // FK para Cabeleleiro
+        public int CabeleleiroId { get; set; }  // FK para Cabeleleiro
 
         // Relacionamentos
         [JsonIgnore]
-        public Cabeleireiro? Cabeleireiro { get; set; }
+        public TipoServico? TipoServico { get; set; }
+
+        [JsonIgnore]
+        public Cabeleleiro? Cabeleleiro { get; set; }
+        
         [JsonIgnore]
         public ICollection<Agendamento>? Agendamentos { get; set; }
     }

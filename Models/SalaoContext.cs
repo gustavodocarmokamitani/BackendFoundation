@@ -11,5 +11,7 @@ namespace backend.Models
         public DbSet<Pagamento> Pagamentos { get; set; }
         public DbSet<Servico> Servicos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<TipoServico> TipoServico { get; set;}
+        public DbSet<StatusAgendamento> StatusAgendamento { get; set; }
     }
 }

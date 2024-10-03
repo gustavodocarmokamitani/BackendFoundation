@@ -8,7 +8,7 @@ namespace backend.Models
     {
         public int Id { get; set; }
         public int ClienteId { get; set; } // FK para Usuario (Cliente)
-        public int CabeleireiroId { get; set; } // FK para Cabeleireiro
+        public int CabeleleiroId { get; set; } // FK para Cabeleleiro
         public int Nota { get; set; }  // Nota de 1-5
         public string Comentario { get; set; } = string.Empty;
         public DateTime DataAvaliacao { get; set; }
@@ -17,6 +17,6 @@ namespace backend.Models
         [JsonIgnore]
         public Usuario? Cliente { get; set; }
         [JsonIgnore]
-        public Cabeleireiro? Cabeleireiro { get; set; }
+        public Cabeleleiro? Cabeleleiro { get; set; }
     }
 }

@@ -1,33 +1,24 @@
 ﻿using backend.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 public class SalaoContext : DbContext
 {
-    private readonly IConfiguration _configuration;
-
-    // Construtor que aceita DbContextOptions
-    public SalaoContext(DbContextOptions<SalaoContext> options, IConfiguration configuration)
+    // Construtor que aceita DbContextOptions e IConfiguration
+    public SalaoContext(DbContextOptions<SalaoContext> options)
         : base(options)
     {
-        _configuration = configuration;
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 36)));
-        }
     }
 
     public DbSet<Usuario> Usuarios { get; set; }
-    public DbSet<Cabeleireiro> Cabeleireiros { get; set; }
+    public DbSet<Cabeleleiro> Cabeleleiros { get; set; }
     public DbSet<Servico> Servicos { get; set; }
     public DbSet<Agendamento> Agendamentos { get; set; }
     public DbSet<Pagamento> Pagamentos { get; set; }
     public DbSet<Avaliacao> Avaliacoes { get; set; }
+    public DbSet<TipoServico> TipoServicos { get; set; }
+    public DbSet<TipoUsuario> TipoUsuarios { get; set; }
+    public DbSet<StatusAgendamento> StatusAgendamentos { get; set; }
+    public DbSet<StatusPagamento> StatusPagamentos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,26 +33,26 @@ public class SalaoContext : DbContext
             .WithOne(a => a.Cliente)
             .HasForeignKey(a => a.ClienteId);
 
-        // Configuração para Cabeleireiro
-        modelBuilder.Entity<Cabeleireiro>()
+        // Configuração para Cabeleleiro
+        modelBuilder.Entity<Cabeleleiro>()
             .HasOne(c => c.Usuario)
             .WithMany()
             .HasForeignKey(c => c.UsuarioId);
 
-        modelBuilder.Entity<Cabeleireiro>()
+        modelBuilder.Entity<Cabeleleiro>()
             .HasMany(c => c.Agendamentos)
-            .WithOne(a => a.Cabeleireiro)
-            .HasForeignKey(a => a.CabeleireiroId);
+            .WithOne(a => a.Cabeleleiro)
+            .HasForeignKey(a => a.CabeleleiroId);
 
-        modelBuilder.Entity<Cabeleireiro>()
+        modelBuilder.Entity<Cabeleleiro>()
             .HasMany(c => c.Servicos)
-            .WithOne(s => s.Cabeleireiro)
-            .HasForeignKey(s => s.CabeleireiroId);
+            .WithOne(s => s.Cabeleleiro)
+            .HasForeignKey(s => s.CabeleleiroId);
 
-        modelBuilder.Entity<Cabeleireiro>()
+        modelBuilder.Entity<Cabeleleiro>()
             .HasMany(c => c.Avaliacoes)
-            .WithOne(a => a.Cabeleireiro)
-            .HasForeignKey(a => a.CabeleireiroId);
+            .WithOne(a => a.Cabeleleiro)
+            .HasForeignKey(a => a.CabeleleiroId);
 
         // Configuração para Servico
         modelBuilder.Entity<Servico>()
@@ -82,8 +73,8 @@ public class SalaoContext : DbContext
             .HasForeignKey(a => a.ClienteId);
 
         modelBuilder.Entity<Avaliacao>()
-            .HasOne(a => a.Cabeleireiro)
+            .HasOne(a => a.Cabeleleiro)
             .WithMany(c => c.Avaliacoes)
-            .HasForeignKey(a => a.CabeleireiroId);
+            .HasForeignKey(a => a.CabeleleiroId);
     }
 }

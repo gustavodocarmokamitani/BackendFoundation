@@ -9,14 +9,16 @@ namespace backend.Models
         public int Id { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Telefone { get; set; } = string.Empty;
+        public string? Telefone { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
-        public string TipoUsuario { get; set; } = string.Empty;
+        public int? TipoUsuarioId { get; set; } // 1 Admin 2 Cabeleleiro 3 Cliente
 
         // Relacionamentos
         [JsonIgnore]
         public ICollection<Agendamento>? Agendamentos { get; set; }
         [JsonIgnore]
         public ICollection<Avaliacao>? Avaliacoes { get; set; }
+        [JsonIgnore]
+        public ICollection<TipoUsuario>? TipoUsuarios{ get; set; }
     }
 }
