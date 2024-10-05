@@ -8,17 +8,17 @@ namespace backend.Models
     {
         public int Id { get; set; }
         public int ClienteId { get; set; } // FK para Usuario (Cliente)
-        public int CabeleleiroId { get; set; } // FK para Cabeleleiro
+        public int FuncionarioId { get; set; } // FK para Funcionario
         public DateTime DataAgendamento { get; set; }
         public int StatusAgendamentoId { get; set; } // 1 Confirmado, 2 Cancelado, 3 Pendente
-        public List<int> ServicosId { get; set; } = new List<int>();
+        public List<Servico> ServicosId { get; set; } = new List<Servico>();
 
         // Relacionamentos
         [JsonIgnore]
         public Usuario? Cliente { get; set; }
 
         [JsonIgnore]
-        public Cabeleleiro? Cabeleleiro { get; set; }
+        public Funcionario? Funcionario { get; set; }
 
         [JsonIgnore]
         public Pagamento? Pagamento { get; set; }

@@ -40,20 +40,31 @@ namespace backend.Controllers
 
         // POST: api/usuario
         [HttpPost]
-        public ActionResult<Usuario> Post([FromBody] Usuario usuario)
+        public ActionResult<List<Usuario>> Post([FromBody] List<Usuario> usuarios)
         {
-            if (usuario == null) return BadRequest("Dados inválidos");
+            if (usuarios == null || !usuarios.Any())
+                return BadRequest("Dados inválidos");
 
-            // Verifica se o tipoUsuarioId existe
-            var tipoUsuario = _dbContext.TipoUsuarios.Find(usuario.TipoUsuarioId);
-            if (tipoUsuario == null)
+            var usuariosParaAdicionar = new List<Usuario>();
+
+            foreach (var usuario in usuarios)
             {
-                return BadRequest($"Tipo de usuário com ID {usuario.TipoUsuarioId} não encontrado.");
+                // Verifica se o tipoUsuarioId existe
+                var tipoUsuario = _dbContext.TipoUsuarios.Find(usuario.TipoUsuarioId);
+                if (tipoUsuario == null)
+                {
+                    return BadRequest($"Tipo de usuário com ID {usuario.TipoUsuarioId} não encontrado.");
+                }
+
+                // Adiciona o usuário à lista para inserção
+                usuariosParaAdicionar.Add(usuario);
             }
 
-            _dbContext.Usuarios.Add(usuario);
+            // Adiciona todos os usuários ao banco de dados
+            _dbContext.Usuarios.AddRange(usuariosParaAdicionar);
             _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = usuario.Id }, usuario);
+
+            return CreatedAtAction(nameof(GetById), new { id = usuariosParaAdicionar.Select(u => u.Id) }, usuariosParaAdicionar);
         }
 
         // PUT: api/usuario/{id}

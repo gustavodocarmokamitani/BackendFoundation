@@ -31,20 +31,32 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Pagamento> Post([FromBody] Pagamento pagamento)
+        public ActionResult<List<Pagamento>> Post([FromBody] List<Pagamento> pagamentos)
         {
-            if (pagamento == null) return BadRequest("Dados inválidos");
-
-            // Verifica se o AgendamentoId existe
-            var agendamento = _dbContext.Agendamentos.Find(pagamento.AgendamentoId);
-            if (agendamento == null)
+            if (pagamentos == null || !pagamentos.Any())
             {
-                return BadRequest($"Agendamento com ID {pagamento.AgendamentoId} não encontrado.");
+                return BadRequest("Dados inválidos");
             }
 
-            _dbContext.Pagamentos.Add(pagamento);
-            _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = pagamento.Id }, pagamento);
+            var pagamentosParaAdicionar = new List<Pagamento>();
+
+            foreach (var pagamento in pagamentos)
+            {
+                // Verifica se o AgendamentoId existe
+                var agendamento = _dbContext.Agendamentos.Find(pagamento.AgendamentoId);
+                if (agendamento == null)
+                {
+                    return BadRequest($"Agendamento com ID {pagamento.AgendamentoId} não encontrado.");
+                }
+
+                // Adiciona o Pagamento ao banco de dados
+                _dbContext.Pagamentos.Add(pagamento);
+                pagamentosParaAdicionar.Add(pagamento);
+            }
+
+            _dbContext.SaveChanges(); // Salva para gerar os Ids dos Pagamentos
+
+            return CreatedAtAction(nameof(Get), pagamentosParaAdicionar); // Retorna todos os Pagamentos adicionados
         }
 
         [HttpPut("{id}")]

@@ -10,7 +10,7 @@ public class SalaoContext : DbContext
     }
 
     public DbSet<Usuario> Usuarios { get; set; }
-    public DbSet<Cabeleleiro> Cabeleleiros { get; set; }
+    public DbSet<Funcionario> Funcionarios { get; set; }
     public DbSet<Servico> Servicos { get; set; }
     public DbSet<Agendamento> Agendamentos { get; set; }
     public DbSet<Pagamento> Pagamentos { get; set; }
@@ -30,24 +30,24 @@ public class SalaoContext : DbContext
 
         modelBuilder.Entity<Usuario>()
             .HasMany(u => u.Avaliacoes)
-            .WithOne(a => a.Cliente)
+            .WithOne(a => a.Clientes)
             .HasForeignKey(a => a.ClienteId);
 
-        // Configuração para Cabeleleiro
-        modelBuilder.Entity<Cabeleleiro>()
+        // Configuração para Funcionarios
+        modelBuilder.Entity<Funcionario>()
             .HasOne(c => c.Usuario)
             .WithMany()
             .HasForeignKey(c => c.UsuarioId);
 
-        modelBuilder.Entity<Cabeleleiro>()
+        modelBuilder.Entity<Funcionario>()
             .HasMany(c => c.Agendamentos)
-            .WithOne(a => a.Cabeleleiro)
-            .HasForeignKey(a => a.CabeleleiroId);
+            .WithOne(a => a.Funcionario)
+            .HasForeignKey(a => a.FuncionarioId);
 
-        modelBuilder.Entity<Cabeleleiro>()
+        modelBuilder.Entity<Funcionario>()
             .HasMany(c => c.Avaliacoes)
-            .WithOne(a => a.Cabeleleiro)
-            .HasForeignKey(a => a.CabeleleiroId);
+            .WithOne(a => a.Funcionarios)
+            .HasForeignKey(a => a.FuncionarioId);
 
         // Configuração para Agendamento
         modelBuilder.Entity<Agendamento>()
@@ -57,13 +57,13 @@ public class SalaoContext : DbContext
 
         // Configuração para Avaliacao
         modelBuilder.Entity<Avaliacao>()
-            .HasOne(a => a.Cliente)
+            .HasOne(a => a.Clientes)
             .WithMany(u => u.Avaliacoes)
             .HasForeignKey(a => a.ClienteId);
 
         modelBuilder.Entity<Avaliacao>()
-            .HasOne(a => a.Cabeleleiro)
+            .HasOne(a => a.Funcionarios)
             .WithMany(c => c.Avaliacoes)
-            .HasForeignKey(a => a.CabeleleiroId);
+            .HasForeignKey(a => a.FuncionarioId);
     }
 }

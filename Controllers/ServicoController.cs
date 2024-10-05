@@ -31,20 +31,32 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Servico> Post([FromBody] Servico servico)
+        public ActionResult<List<Servico>> Post([FromBody] List<Servico> servicos)
         {
-            if (servico == null) return BadRequest("Dados inválidos");
-
-            // Verifica se o TipoServicoId existe
-            var tipoServico = _dbContext.TipoServicos.Find(servico.TipoServicoId);
-            if (tipoServico == null)
+            if (servicos == null || !servicos.Any())
             {
-                return BadRequest($"Tipo de serviço com ID {servico.TipoServicoId} não encontrado.");
+                return BadRequest("Dados inválidos");
             }
 
-            _dbContext.Servicos.Add(servico);
-            _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = servico.Id }, servico);
+            var servicosParaAdicionar = new List<Servico>();
+
+            foreach (var servico in servicos)
+            {
+                // Verifica se o TipoServicoId existe
+                var tipoServico = _dbContext.TipoServicos.Find(servico.TipoServicoId);
+                if (tipoServico == null)
+                {
+                    return BadRequest($"Tipo de serviço com ID {servico.TipoServicoId} não encontrado.");
+                }
+
+                // Adiciona o Servico ao banco de dados
+                _dbContext.Servicos.Add(servico);
+                servicosParaAdicionar.Add(servico);
+            }
+
+            _dbContext.SaveChanges(); // Salva para gerar os Ids dos Servicos
+
+            return CreatedAtAction(nameof(Get), servicosParaAdicionar); // Retorna todos os Servicos adicionados
         }
 
         [HttpPut("{id}")]

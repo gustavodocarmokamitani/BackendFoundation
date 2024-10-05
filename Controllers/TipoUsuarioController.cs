@@ -34,12 +34,24 @@ namespace backend.Controller
 
         // POST: api/tiposusuario
         [HttpPost]
-        public ActionResult<TipoUsuario> Post([FromBody] TipoUsuario TipoUsuario)
+        public ActionResult<List<TipoUsuario>> Post([FromBody] List<TipoUsuario> tiposUsuario)
         {
-            if (TipoUsuario == null) return BadRequest("Dados inválidos");
-            _dbContext.TipoUsuarios.Add(TipoUsuario);
+            if (tiposUsuario == null || !tiposUsuario.Any())
+                return BadRequest("Dados inválidos");
+
+            var tiposUsuarioParaAdicionar = new List<TipoUsuario>();
+
+            foreach (var tipoUsuario in tiposUsuario)
+            {
+                // Adiciona o tipo de usuário à lista para inserção
+                tiposUsuarioParaAdicionar.Add(tipoUsuario);
+            }
+
+            // Adiciona todos os tipos de usuário ao banco de dados
+            _dbContext.TipoUsuarios.AddRange(tiposUsuarioParaAdicionar);
             _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = TipoUsuario.Id }, TipoUsuario);
+
+            return CreatedAtAction(nameof(GetById), new { id = tiposUsuarioParaAdicionar.Select(t => t.Id) }, tiposUsuarioParaAdicionar);
         }
 
         // PUT: api/tiposusuario/{id}

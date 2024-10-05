@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(SalaoContext))]
-    partial class SalaoContextModelSnapshot : ModelSnapshot
+    [Migration("20241005003413_UpdateServiceSchema_1.1.9")]
+    partial class UpdateServiceSchema_119
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,21 +23,6 @@ namespace backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("AgendamentoServico", b =>
-                {
-                    b.Property<int>("AgendamentosId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServicosIdId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AgendamentosId", "ServicosIdId");
-
-                    b.HasIndex("ServicosIdId");
-
-                    b.ToTable("AgendamentoServico");
-                });
 
             modelBuilder.Entity("backend.Models.Agendamento", b =>
                 {
@@ -53,6 +41,13 @@ namespace backend.Migrations
                     b.Property<int>("FuncionarioId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ServicoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServicosId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("StatusAgendamentoId")
                         .HasColumnType("int");
 
@@ -61,6 +56,8 @@ namespace backend.Migrations
                     b.HasIndex("ClienteId");
 
                     b.HasIndex("FuncionarioId");
+
+                    b.HasIndex("ServicoId");
 
                     b.HasIndex("StatusAgendamentoId");
 
@@ -311,21 +308,6 @@ namespace backend.Migrations
                     b.ToTable("Usuario");
                 });
 
-            modelBuilder.Entity("AgendamentoServico", b =>
-                {
-                    b.HasOne("backend.Models.Agendamento", null)
-                        .WithMany()
-                        .HasForeignKey("AgendamentosId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("backend.Models.Servico", null)
-                        .WithMany()
-                        .HasForeignKey("ServicosIdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("backend.Models.Agendamento", b =>
                 {
                     b.HasOne("backend.Models.Usuario", "Cliente")
@@ -339,6 +321,10 @@ namespace backend.Migrations
                         .HasForeignKey("FuncionarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("backend.Models.Servico", null)
+                        .WithMany("Agendamentos")
+                        .HasForeignKey("ServicoId");
 
                     b.HasOne("backend.Models.StatusAgendamento", "StatusAgendamento")
                         .WithMany()
@@ -442,6 +428,11 @@ namespace backend.Migrations
                     b.Navigation("Avaliacoes");
 
                     b.Navigation("Servicos");
+                });
+
+            modelBuilder.Entity("backend.Models.Servico", b =>
+                {
+                    b.Navigation("Agendamentos");
                 });
 
             modelBuilder.Entity("backend.Models.Usuario", b =>

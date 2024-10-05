@@ -11,7 +11,7 @@ namespace backend.Models
         public string Email { get; set; } = string.Empty;
         public string? Telefone { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
-        public int? TipoUsuarioId { get; set; } // 1 Admin 2 Cabeleleiro 3 Cliente
+        public int? TipoUsuarioId { get; set; } // 1 Admin 2 Funcionario 3 Cliente
 
         // Relacionamentos
         [JsonIgnore]

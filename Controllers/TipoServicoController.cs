@@ -34,12 +34,39 @@ namespace backend.Controller
 
         // POST: api/tiposservico
         [HttpPost]
-        public ActionResult<TipoServico> Post([FromBody] TipoServico tipoServico)
+        public ActionResult<List<TipoServico>> Post([FromBody] List<TipoServico> tiposServico)
         {
-            if (tipoServico == null) return BadRequest("Dados inválidos");
-            _dbContext.TipoServicos.Add(tipoServico);
-            _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = tipoServico.Id }, tipoServico);
+            if (tiposServico == null || !tiposServico.Any())
+            {
+                return BadRequest("Dados inválidos");
+            }
+
+            var tiposServicoParaAdicionar = new List<TipoServico>();
+
+            foreach (var tipoServico in tiposServico)
+            {
+                // Adiciona o TipoServico ao banco de dados
+                _dbContext.TipoServicos.Add(tipoServico);
+                tiposServicoParaAdicionar.Add(tipoServico);
+            }
+
+            _dbContext.SaveChanges(); // Salva para gerar os Ids dos TipoServicos
+
+            // Agora cria os Servicos correspondentes para cada TipoServico
+            foreach (var tipoServico in tiposServicoParaAdicionar)
+            {
+                var servico = new Servico
+                {
+                    TipoServicoId = tipoServico.Id,
+                    // Inicializa outros campos de Servico se necessário
+                };
+
+                _dbContext.Servicos.Add(servico);
+            }
+
+            _dbContext.SaveChanges(); // Salva todos os Servicos adicionados
+
+            return CreatedAtAction(nameof(Get), tiposServicoParaAdicionar); // Retorna todos os TipoServicos adicionados
         }
 
         // PUT: api/tiposservico/{id}

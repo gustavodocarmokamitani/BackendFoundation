@@ -33,29 +33,37 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Avaliacao>> Post([FromBody] Avaliacao avaliacao)
+        public async Task<ActionResult<List<Avaliacao>>> Post([FromBody] List<Avaliacao> avaliacoes)
         {
-            if (avaliacao == null) return BadRequest("Dados inválidos.");
+            if (avaliacoes == null || !avaliacoes.Any())
+                return BadRequest("Dados inválidos.");
 
-            // Verifica se o ClienteId existe
-            var cliente = await _dbContext.Usuarios.FindAsync(avaliacao.ClienteId);
-            if (cliente == null)
+            var addedAvaliacoes = new List<Avaliacao>();
+
+            foreach (var avaliacao in avaliacoes)
             {
-                return BadRequest($"Cliente com ID {avaliacao.ClienteId} não encontrado.");
+                // Verifica se o ClienteId existe
+                var cliente = await _dbContext.Usuarios.FindAsync(avaliacao.ClienteId);
+                if (cliente == null)
+                {
+                    return BadRequest($"Cliente com ID {avaliacao.ClienteId} não encontrado.");
+                }
+
+                // Verifica se o CabeleleiroId existe
+                var cabeleireiro = await _dbContext.Funcionarios.FindAsync(avaliacao.FuncionarioId);
+                if (cabeleireiro == null)
+                {
+                    return BadRequest($"Funcionarios com ID {avaliacao.FuncionarioId} não encontrado.");
+                }
+
+                // Adiciona a avaliação
+                _dbContext.Avaliacoes.Add(avaliacao);
+                addedAvaliacoes.Add(avaliacao);
             }
 
-            // Verifica se o CabeleleiroId existe
-            var cabeleireiro = await _dbContext.Cabeleleiros.FindAsync(avaliacao.CabeleleiroId);
-            if (cabeleireiro == null)
-            {
-                return BadRequest($"Cabeleleiro com ID {avaliacao.CabeleleiroId} não encontrado.");
-            }
-
-            // Adiciona a avaliação
-            _dbContext.Avaliacoes.Add(avaliacao);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = avaliacao.Id }, avaliacao);
+            return CreatedAtAction(nameof(GetById), new { ids = addedAvaliacoes.Select(a => a.Id) }, addedAvaliacoes);
         }
 
 
@@ -76,10 +84,10 @@ namespace backend.Controllers
             }
 
             // Verifica se o CabeleleiroId existe
-            var cabeleireiro = await _dbContext.Cabeleleiros.FindAsync(avaliacao.CabeleleiroId);
+            var cabeleireiro = await _dbContext.Funcionarios.FindAsync(avaliacao.FuncionarioId);
             if (cabeleireiro == null)
             {
-                return BadRequest($"Cabeleleiro com ID {avaliacao.CabeleleiroId} não encontrado.");
+                return BadRequest($"Funcionarios com ID {avaliacao.FuncionarioId} não encontrado.");
             }
 
             // Atualiza os valores da avaliação existente

@@ -8,15 +8,15 @@ namespace backend.Models
     {
         public int Id { get; set; }
         public int ClienteId { get; set; } // FK para Usuario (Cliente)
-        public int CabeleleiroId { get; set; } // FK para Cabeleleiro
+        public int FuncionarioId { get; set; } // FK para Funcionario
         public int Nota { get; set; }  // Nota de 1-5
         public string Comentario { get; set; } = string.Empty;
         public DateTime DataAvaliacao { get; set; }
 
         // Relacionamentos
         [JsonIgnore]
-        public Usuario? Cliente { get; set; }
+        public Usuario? Clientes { get; set; }
         [JsonIgnore]
-        public Cabeleleiro? Cabeleleiro { get; set; }
+        public Funcionario? Funcionarios { get; set; }
     }
 }

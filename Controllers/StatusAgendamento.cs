@@ -32,14 +32,27 @@ namespace backend.Controller
             return Ok(StatusAgendamento);
         }
 
-        // POST: api/tiposservico
+        // POST: api/statusagendamento
         [HttpPost]
-        public ActionResult<StatusAgendamento> Post([FromBody] StatusAgendamento StatusAgendamento)
+        public ActionResult<List<StatusAgendamento>> Post([FromBody] List<StatusAgendamento> statusAgendamentos)
         {
-            if (StatusAgendamento == null) return BadRequest("Dados inválidos");
-            _dbContext.StatusAgendamentos.Add(StatusAgendamento);
-            _dbContext.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = StatusAgendamento.Id }, StatusAgendamento);
+            if (statusAgendamentos == null || !statusAgendamentos.Any())
+            {
+                return BadRequest("Dados inválidos");
+            }
+
+            var statusAgendamentosParaAdicionar = new List<StatusAgendamento>();
+
+            foreach (var statusAgendamento in statusAgendamentos)
+            {
+                // Adiciona o StatusAgendamento ao banco de dados
+                _dbContext.StatusAgendamentos.Add(statusAgendamento);
+                statusAgendamentosParaAdicionar.Add(statusAgendamento);
+            }
+
+            _dbContext.SaveChanges(); // Salva para gerar os Ids dos StatusAgendamentos
+
+            return CreatedAtAction(nameof(Get), statusAgendamentosParaAdicionar); // Retorna todos os StatusAgendamentos adicionados
         }
 
         // PUT: api/tiposservico/{id}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(SalaoContext))]
-    partial class SalaoContextModelSnapshot : ModelSnapshot
+    [Migration("20241004131829_UpdateServiceSchema_1.1.3")]
+    partial class UpdateServiceSchema_113
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,12 +29,12 @@ namespace backend.Migrations
                     b.Property<int>("AgendamentosId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServicosIdId")
+                    b.Property<int>("ServicoId")
                         .HasColumnType("int");
 
-                    b.HasKey("AgendamentosId", "ServicosIdId");
+                    b.HasKey("AgendamentosId", "ServicoId");
 
-                    b.HasIndex("ServicosIdId");
+                    b.HasIndex("ServicoId");
 
                     b.ToTable("AgendamentoServico");
                 });
@@ -44,23 +47,23 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CabeleleiroId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClienteId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DataAgendamento")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("FuncionarioId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StatusAgendamentoId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("CabeleleiroId");
 
-                    b.HasIndex("FuncionarioId");
+                    b.HasIndex("ClienteId");
 
                     b.HasIndex("StatusAgendamentoId");
 
@@ -75,6 +78,9 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CabeleleiroId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClienteId")
                         .HasColumnType("int");
 
@@ -85,22 +91,19 @@ namespace backend.Migrations
                     b.Property<DateTime>("DataAvaliacao")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("FuncionarioId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Nota")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("CabeleleiroId");
 
-                    b.HasIndex("FuncionarioId");
+                    b.HasIndex("ClienteId");
 
                     b.ToTable("Avaliacao");
                 });
 
-            modelBuilder.Entity("backend.Models.Funcionario", b =>
+            modelBuilder.Entity("backend.Models.Cabeleleiro", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,7 +122,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Funcionario");
+                    b.ToTable("Cabeleleiro");
                 });
 
             modelBuilder.Entity("backend.Models.MetodoPagamento", b =>
@@ -179,7 +182,7 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("FuncionarioId")
+                    b.Property<int?>("CabeleleiroId")
                         .HasColumnType("int");
 
                     b.Property<int>("TipoServicoId")
@@ -187,7 +190,7 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FuncionarioId");
+                    b.HasIndex("CabeleleiroId");
 
                     b.HasIndex("TipoServicoId");
 
@@ -266,7 +269,7 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Nome")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -321,22 +324,22 @@ namespace backend.Migrations
 
                     b.HasOne("backend.Models.Servico", null)
                         .WithMany()
-                        .HasForeignKey("ServicosIdId")
+                        .HasForeignKey("ServicoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("backend.Models.Agendamento", b =>
                 {
-                    b.HasOne("backend.Models.Usuario", "Cliente")
+                    b.HasOne("backend.Models.Cabeleleiro", "Cabeleleiro")
                         .WithMany("Agendamentos")
-                        .HasForeignKey("ClienteId")
+                        .HasForeignKey("CabeleleiroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.Funcionario", "Funcionario")
+                    b.HasOne("backend.Models.Usuario", "Cliente")
                         .WithMany("Agendamentos")
-                        .HasForeignKey("FuncionarioId")
+                        .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -346,33 +349,33 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Cliente");
+                    b.Navigation("Cabeleleiro");
 
-                    b.Navigation("Funcionario");
+                    b.Navigation("Cliente");
 
                     b.Navigation("StatusAgendamento");
                 });
 
             modelBuilder.Entity("backend.Models.Avaliacao", b =>
                 {
-                    b.HasOne("backend.Models.Usuario", "Clientes")
+                    b.HasOne("backend.Models.Cabeleleiro", "Cabeleleiro")
+                        .WithMany("Avaliacoes")
+                        .HasForeignKey("CabeleleiroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Usuario", "Cliente")
                         .WithMany("Avaliacoes")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.Funcionario", "Funcionarios")
-                        .WithMany("Avaliacoes")
-                        .HasForeignKey("FuncionarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Cabeleleiro");
 
-                    b.Navigation("Clientes");
-
-                    b.Navigation("Funcionarios");
+                    b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("backend.Models.Funcionario", b =>
+            modelBuilder.Entity("backend.Models.Cabeleleiro", b =>
                 {
                     b.HasOne("backend.Models.Usuario", "Usuario")
                         .WithMany()
@@ -408,9 +411,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Servico", b =>
                 {
-                    b.HasOne("backend.Models.Funcionario", "Funcionario")
+                    b.HasOne("backend.Models.Cabeleleiro", "Cabeleleiro")
                         .WithMany("Servicos")
-                        .HasForeignKey("FuncionarioId");
+                        .HasForeignKey("CabeleleiroId");
 
                     b.HasOne("backend.Models.TipoServico", "TipoServico")
                         .WithMany()
@@ -418,7 +421,7 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Funcionario");
+                    b.Navigation("Cabeleleiro");
 
                     b.Navigation("TipoServico");
                 });
@@ -435,7 +438,7 @@ namespace backend.Migrations
                     b.Navigation("Pagamento");
                 });
 
-            modelBuilder.Entity("backend.Models.Funcionario", b =>
+            modelBuilder.Entity("backend.Models.Cabeleleiro", b =>
                 {
                     b.Navigation("Agendamentos");
 

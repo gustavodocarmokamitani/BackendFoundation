@@ -7,14 +7,14 @@ namespace backend.Models
     public class Servico
     {
         public int Id { get; set; }
-        public int TipoServicoId { get; set; } // FK para Cabeleleiro
+        public int TipoServicoId { get; set; } // FK para Funcionario
 
         // Relacionamentos
         [JsonIgnore]
         public TipoServico? TipoServico { get; set; }
 
         [JsonIgnore]
-        public Cabeleleiro? Cabeleleiro { get; set; }
+        public Funcionario? Funcionario { get; set; }
         
         [JsonIgnore]
         public ICollection<Agendamento>? Agendamentos { get; set; }

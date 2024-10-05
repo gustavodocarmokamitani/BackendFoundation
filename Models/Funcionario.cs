@@ -5,8 +5,8 @@ using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
-    [Table("Cabeleleiro")]
-    public class Cabeleleiro
+    [Table("Funcionario")]
+    public class Funcionario
     {
         public int Id { get; set; }
         public int UsuarioId { get; set; }
