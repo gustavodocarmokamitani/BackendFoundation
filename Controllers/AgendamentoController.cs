@@ -61,16 +61,11 @@ namespace backend.Controllers
                     return BadRequest($"Cliente com ID {agendamento.ClienteId} não encontrado.");
                 }
 
-                // Verifica se o CabeleireiroId é válido
-                if (agendamento.FuncionarioId <= 0)
+                // Verifica se o FuncionarioId é válido e é do tipo funcionario
+                var cabeleireiro = await _dbContext.Usuarios.FindAsync(agendamento.FuncionarioId);
+                if (cabeleireiro == null || cabeleireiro.TipoUsuarioId != 2) // Assumindo que 2 é o ID para funcionário
                 {
-                    return BadRequest($"Cabeleireiro com ID {agendamento.FuncionarioId} não encontrado.");
-                }
-
-                var cabeleireiro = await _dbContext.Funcionarios.FindAsync(agendamento.FuncionarioId);
-                if (cabeleireiro == null)
-                {
-                    return BadRequest($"Cabeleireiro com ID {agendamento.FuncionarioId} não encontrado.");
+                    return BadRequest($"Cabeleireiro com ID {agendamento.FuncionarioId} não encontrado ou não é um funcionário.");
                 }
 
                 // Verifica se todos os ServicoIds existem
@@ -96,9 +91,9 @@ namespace backend.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { ids = addedAgendamentos.Select(a => a.Id) }, addedAgendamentos);
+            // Alteração aqui para pegar apenas o primeiro ID ou ajustar conforme sua necessidade
+            return CreatedAtAction(nameof(GetById), new { id = addedAgendamentos.First().Id }, addedAgendamentos);
         }
-
 
         // Atualizar um agendamento existente
         [HttpPut("{id}")]

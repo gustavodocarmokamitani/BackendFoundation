@@ -15,8 +15,9 @@ namespace backend.Models
         // Relacionamento
         [JsonIgnore]
         public Agendamento? Agendamento { get; set; }
-
+        [JsonIgnore]
         public StatusPagamento? StatusPagamento { get; set; }
+        [JsonIgnore]
         public MetodoPagamento? MetodoPagamento { get; set; }
     }
 }

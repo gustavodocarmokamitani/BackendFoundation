@@ -49,11 +49,11 @@ namespace backend.Controllers
                     return BadRequest($"Cliente com ID {avaliacao.ClienteId} não encontrado.");
                 }
 
-                // Verifica se o CabeleleiroId existe
+                // Verifica se o FuncionarioId existe
                 var cabeleireiro = await _dbContext.Funcionarios.FindAsync(avaliacao.FuncionarioId);
                 if (cabeleireiro == null)
                 {
-                    return BadRequest($"Funcionarios com ID {avaliacao.FuncionarioId} não encontrado.");
+                    return BadRequest($"Funcionário com ID {avaliacao.FuncionarioId} não encontrado.");
                 }
 
                 // Adiciona a avaliação
@@ -63,9 +63,9 @@ namespace backend.Controllers
 
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { ids = addedAvaliacoes.Select(a => a.Id) }, addedAvaliacoes);
+            // Retornar todas as avaliações adicionadas (ou algum detalhe relevante)
+            return CreatedAtAction(nameof(Get), new { }, addedAvaliacoes);
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Avaliacao avaliacao)

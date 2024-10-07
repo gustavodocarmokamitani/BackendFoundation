@@ -7,7 +7,7 @@ namespace backend.Models
     public class Servico
     {
         public int Id { get; set; }
-        public int TipoServicoId { get; set; } // FK para Funcionario
+        public int TipoServicoId { get; set; }
 
         // Relacionamentos
         [JsonIgnore]
@@ -17,6 +17,6 @@ namespace backend.Models
         public Funcionario? Funcionario { get; set; }
         
         [JsonIgnore]
-        public ICollection<Agendamento>? Agendamentos { get; set; }
+        public Agendamento? Agendamentos { get; set; }
     }
 }

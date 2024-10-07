@@ -11,7 +11,7 @@ namespace backend.Models
         public int FuncionarioId { get; set; } // FK para Funcionario
         public DateTime DataAgendamento { get; set; }
         public int StatusAgendamentoId { get; set; } // 1 Confirmado, 2 Cancelado, 3 Pendente
-        public List<Servico> ServicosId { get; set; } = new List<Servico>();
+        public List<int> ServicosId { get; set; } = new List<int>();
 
         // Relacionamentos
         [JsonIgnore]

@@ -19,6 +19,8 @@ public class SalaoContext : DbContext
     public DbSet<TipoUsuario> TipoUsuarios { get; set; }
     public DbSet<StatusAgendamento> StatusAgendamentos { get; set; }
     public DbSet<StatusPagamento> StatusPagamentos { get; set; }
+    public DbSet<MetodoPagamento> MetodosPagamento { get; set; } 
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,5 +67,6 @@ public class SalaoContext : DbContext
             .HasOne(a => a.Funcionarios)
             .WithMany(c => c.Avaliacoes)
             .HasForeignKey(a => a.FuncionarioId);
+
     }
 }

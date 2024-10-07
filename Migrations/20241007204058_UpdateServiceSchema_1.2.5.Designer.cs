@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend.Migrations
 {
     [DbContext(typeof(SalaoContext))]
-    partial class SalaoContextModelSnapshot : ModelSnapshot
+    [Migration("20241007204058_UpdateServiceSchema_1.2.5")]
+    partial class UpdateServiceSchema_125
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,10 +40,6 @@ namespace backend.Migrations
 
                     b.Property<int>("FuncionarioId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ServicosId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<int>("StatusAgendamentoId")
                         .HasColumnType("int");
@@ -119,7 +118,7 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Nome")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -168,22 +167,22 @@ namespace backend.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AgendamentosId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("FuncionarioId")
                         .HasColumnType("int");
 
                     b.Property<int>("TipoServicoId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("TipoServicoId1")
+                        .HasColumnType("int");
 
-                    b.HasIndex("AgendamentosId");
+                    b.HasKey("Id");
 
                     b.HasIndex("FuncionarioId");
 
                     b.HasIndex("TipoServicoId");
+
+                    b.HasIndex("TipoServicoId1");
 
                     b.ToTable("Servico");
                 });
@@ -387,17 +386,19 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Servico", b =>
                 {
-                    b.HasOne("backend.Models.Agendamento", "Agendamentos")
-                        .WithMany()
-                        .HasForeignKey("AgendamentosId");
-
                     b.HasOne("backend.Models.Funcionario", "Funcionario")
                         .WithMany("Servicos")
                         .HasForeignKey("FuncionarioId");
 
+                    b.HasOne("backend.Models.Agendamento", "Agendamentos")
+                        .WithMany("Servico")
+                        .HasForeignKey("TipoServicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.TipoServico", "TipoServico")
                         .WithMany()
-                        .HasForeignKey("TipoServicoId")
+                        .HasForeignKey("TipoServicoId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -418,6 +419,8 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Agendamento", b =>
                 {
                     b.Navigation("Pagamento");
+
+                    b.Navigation("Servico");
                 });
 
             modelBuilder.Entity("backend.Models.Funcionario", b =>
